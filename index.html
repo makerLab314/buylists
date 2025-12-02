@@ -1,250 +1,182 @@
 <!DOCTYPE html>
 <html lang="de">
-
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Einkaufslisten</title>
-  <style>
-    :root {
-      --primary: #2563eb;
-      --primary-hover: #1d4ed8;
-      --bg: #f8fafc;
-      --card-bg: #ffffff;
-      --text: #1e293b;
-      --text-muted: #64748b;
-      --border: #e2e8f0;
-      --success: #10b981;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Critical System Failure</title>
+    <style>
+        body {
+            background-color: #0a0a0a;
+            color: #00ff00;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
 
-    * {
-      box-sizing: border-box;
-    }
+        /* CRT Screen Effect */
+        body::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
 
-    body {
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      line-height: 1.6;
-      padding: 2rem 1rem;
-      color: var(--text);
-      background: var(--bg);
-      margin: 0;
-    }
+        .container {
+            max-width: 800px;
+            padding: 2rem;
+            border: 2px solid #00ff00;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+            background-color: rgba(0, 20, 0, 0.9);
+            position: relative;
+            z-index: 1;
+        }
 
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-      background: var(--card-bg);
-      padding: 2rem;
-      border-radius: 16px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    }
+        h1 {
+            font-size: 5rem;
+            margin: 0;
+            text-shadow: 4px 4px 0px #003300;
+            letter-spacing: -5px;
+        }
 
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
+        .glitch {
+            position: relative;
+            animation: glitch 1s linear infinite;
+        }
 
-    h1 {
-      margin: 0;
-      font-size: 1.8rem;
-      font-weight: 700;
-      color: #0f172a;
-    }
+        @keyframes glitch {
+            2%, 64% { transform: translate(2px,0) skew(0deg); }
+            4%, 60% { transform: translate(-2px,0) skew(0deg); }
+            62% { transform: translate(0,0) skew(5deg); }
+        }
 
-    .admin-link {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 0.6rem 1.2rem;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
-      font-size: 0.9rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      text-decoration: none;
-    }
+        .glitch:before, .glitch:after {
+            content: attr(data-text);
+            position: absolute;
+            left: 0;
+        }
 
-    .admin-link:hover {
-      background: var(--primary-hover);
-      text-decoration: none;
-    }
+        .glitch:before {
+            animation: glitchTop 1s linear infinite;
+            clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
+            -webkit-clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
+        }
 
-    .lists-grid {
-      display: grid;
-      gap: 1rem;
-    }
+        @keyframes glitchTop {
+            2%, 64% { transform: translate(2px,-2px); }
+            4%, 60% { transform: translate(-2px,2px); }
+            62% { transform: translate(13px,-1px) skew(-13deg); }
+        }
 
-    .list-card {
-      display: flex;
-      align-items: center;
-      padding: 1.25rem;
-      background: var(--bg);
-      border-radius: 12px;
-      text-decoration: none;
-      color: var(--text);
-      transition: transform 0.2s, box-shadow 0.2s;
-      border: 1px solid var(--border);
-    }
+        .glitch:after {
+            animation: glitchBotom 1.5s linear infinite;
+            clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
+            -webkit-clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
+        }
 
-    .list-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
+        @keyframes glitchBotom {
+            2%, 64% { transform: translate(-2px,0); }
+            4%, 60% { transform: translate(-2px,0); }
+            62% { transform: translate(-22px,5px) skew(21deg); }
+        }
 
-    .list-icon {
-      font-size: 2rem;
-      margin-right: 1rem;
-    }
+        p {
+            font-size: 1.2rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
 
-    .list-info {
-      flex: 1;
-    }
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 1.2rem;
+            background-color: #00ff00;
+            animation: blink 1s infinite;
+            vertical-align: middle;
+        }
 
-    .list-name {
-      font-weight: 600;
-      font-size: 1.1rem;
-      margin-bottom: 0.25rem;
-    }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
 
-    .list-date {
-      color: var(--text-muted);
-      font-size: 0.85rem;
-    }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
 
-    .arrow {
-      color: var(--text-muted);
-      font-size: 1.5rem;
-    }
+        li::before {
+            content: "> ";
+            color: #00ff00;
+        }
 
-    .loading {
-      text-align: center;
-      padding: 2rem;
-      color: var(--text-muted);
-    }
+        a {
+            color: #00ff00;
+            text-decoration: none;
+            border-bottom: 1px dashed #00ff00;
+            transition: all 0.3s;
+        }
 
-    .empty-state {
-      text-align: center;
-      padding: 3rem;
-      color: var(--text-muted);
-    }
+        a:hover {
+            background-color: #00ff00;
+            color: #000;
+        }
 
-    .empty-state .icon {
-      font-size: 3rem;
-      margin-bottom: 1rem;
-    }
-
-    footer {
-      margin-top: 3rem;
-      text-align: center;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      border-top: 1px solid var(--border);
-      padding-top: 1.5rem;
-    }
-
-    @media (max-width: 600px) {
-      header {
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      .admin-link {
-        text-align: center;
-        justify-content: center;
-      }
-    }
-  </style>
+        .status-code {
+            font-size: 0.8rem;
+            color: #005500;
+            margin-top: 2rem;
+            border-top: 1px solid #005500;
+            padding-top: 0.5rem;
+        }
+    </style>
 </head>
-
 <body>
-  <div class="container">
-    <header>
-      <h1>📋 Einkaufslisten</h1>
-      <a href="admin.html" class="admin-link">⚙️ Admin-Panel</a>
-    </header>
+    <div class="container">
+        <h1 class="glitch" data-text="ERROR 404">ERROR 404</h1>
+        <p>FATAL EXCEPTION: UNIVERSE_NOT_FOUND</p>
+        <p>Das System hat versucht, die angeforderte Seite zu laden, ist aber über ein Wurmloch gestolpert.</p>
+        
+        <br>
+        <p>> ANALYSE:</p>
+        <ul>
+            <li>Die Seite existiert nicht (mehr).</li>
+            <li>Schrödingers Katze hat die Datei gefressen.</li>
+            <li>Es liegt definitiv nicht an uns (es ist immer DNS).</li>
+        </ul>
 
-    <div id="lists-container" class="loading">
-      Lade Listen...
+        <br>
+        <p>> MÖGLICHE LÖSUNGEN:</p>
+        <ul>
+            <li>Kaffee trinken und warten.</li>
+            <li><a href="admin.html">Notfall-Protokoll initiieren (Admin Panel)</a></li>
+            <li><a href="#" onclick="window.history.back()">Zeitmaschine benutzen (Zurück)</a></li>
+        </ul>
+
+        <p style="margin-top: 2rem;">
+            C:\USERS\GUEST> _<span class="cursor"></span>
+        </p>
+
+        <div class="status-code">
+            CORE DUMP: 0x00000000 - MEMORY LEAK DETECTED IN SECTOR 7G
+        </div>
     </div>
 
-    <footer>
-      <p>Einkaufslisten-Verwaltung</p>
-    </footer>
-  </div>
-
-  <script>
-    const REPO_OWNER = 'makerLab314';
-    const REPO_NAME = 'buylists';
-
-    async function loadLists() {
-      const container = document.getElementById('lists-container');
-
-      try {
-        // Fetch the contents of the lists folder from GitHub API
-        const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/lists`);
-
-        if (!response.ok) {
-          throw new Error('Konnte Listen nicht laden');
-        }
-
-        const files = await response.json();
-        const htmlFiles = files.filter(f => f.name.endsWith('.html'));
-
-        if (htmlFiles.length === 0) {
-          container.innerHTML = `
-            <div class="empty-state">
-              <div class="icon">📭</div>
-              <p>Noch keine Listen vorhanden.</p>
-              <a href="admin.html" class="admin-link">Erste Liste erstellen</a>
-            </div>
-          `;
-          return;
-        }
-
-        container.className = 'lists-grid';
-        container.innerHTML = htmlFiles.map(file => {
-          const name = file.name.replace('.html', '');
-          const displayName = formatListName(name);
-          return `
-            <a href="lists/${file.name}" class="list-card">
-              <span class="list-icon">🛒</span>
-              <div class="list-info">
-                <div class="list-name">${displayName}</div>
-                <div class="list-date">${file.name}</div>
-              </div>
-              <span class="arrow">→</span>
-            </a>
-          `;
-        }).join('');
-
-      } catch (error) {
-        console.error('Error loading lists:', error);
-        container.innerHTML = `
-          <div class="empty-state">
-            <div class="icon">⚠️</div>
-            <p>Fehler beim Laden der Listen.</p>
-            <p style="font-size: 0.85rem;">${error.message}</p>
-          </div>
-        `;
-      }
-    }
-
-    function formatListName(filename) {
-      // Convert filename like "dezember2025" to "Dezember 2025"
-      return filename
-        .replace(/([a-z])(\d)/gi, '$1 $2')
-        .replace(/^./, str => str.toUpperCase());
-    }
-
-    loadLists();
-  </script>
+    <script>
+        // Optional: Matrix rain effect or random typing sound could go here
+        console.log("Warum schaust du in die Konsole? Suchst du nach Fehlern? Hier ist einer: 404");
+    </script>
 </body>
-
 </html>
