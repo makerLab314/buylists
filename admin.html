@@ -564,6 +564,7 @@
           <div class="existing-list-item">
             <span class="name">${file.name}</span>
             <div class="actions">
+              <button onclick="copyListLink('${file.name}')" class="secondary" title="Link kopieren">🔗 Link</button>
               <button onclick="editList('${file.name}')" class="secondary">✏️ Bearbeiten</button>
               <button onclick="deleteList('${file.name}')" class="danger">🗑️ Löschen</button>
             </div>
@@ -1175,7 +1176,15 @@
           throw new Error(error.message || 'Fehler beim Speichern');
         }
 
-        showMessage(`Liste erfolgreich gespeichert! Link: https://${REPO_OWNER}.github.io/${REPO_NAME}/lists/${fullFilename}`, 'success');
+        showMessage(`
+          <div>Liste erfolgreich gespeichert!</div>
+          <div style="margin-top:0.5rem">
+            <button onclick="copyListLink('${fullFilename}')" class="secondary" style="font-size:0.8rem; padding:0.3rem 0.6rem;">
+              🔗 Link kopieren
+            </button>
+            <a href="https://${REPO_OWNER}.github.io/${REPO_NAME}/lists/${fullFilename}" target="_blank" style="margin-left:0.5rem; color: inherit;">Öffnen ↗</a>
+          </div>
+        `, 'success');
 
       } catch (error) {
         showMessage(`Fehler: ${error.message}`, 'error');
@@ -1199,11 +1208,23 @@
     // Messages
     function showMessage(text, type) {
       const msg = document.getElementById('message');
-      msg.textContent = text;
+      msg.innerHTML = text;
       msg.className = `message show ${type}`;
       setTimeout(() => {
         msg.classList.remove('show');
-      }, 5000);
+      }, 6000);
+    }
+
+    function copyListLink(filename) {
+      const url = `https://${REPO_OWNER}.github.io/${REPO_NAME}/lists/${filename}`;
+      navigator.clipboard.writeText(url).then(() => {
+        // Don't use showMessage here if we want to avoid overwriting the save message immediately if clicked there
+        // But for the list overview it is fine.
+        // Let's use a temporary toast or just showMessage.
+        showMessage(`Link kopiert!<br><small>${url}</small>`, 'success');
+      }).catch(err => {
+        showMessage('Konnte Link nicht kopieren: ' + err, 'error');
+      });
     }
   </script>
 </body>
