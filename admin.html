@@ -588,7 +588,7 @@
         if (!response.ok) throw new Error('Konnte Liste nicht laden');
 
         const data = await response.json();
-        const html = atob(data.content);
+        const html = decodeURIComponent(escape(atob(data.content)));
 
         // Parse the HTML
         const parser = new DOMParser();
@@ -1087,7 +1087,7 @@
 
       window.location.href = mailtoLink;
     }
-  </script>
+  <\/script>
 </body>
 
 </html>`;
