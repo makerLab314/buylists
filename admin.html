@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin - Einkaufslisten</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --success: #10b981;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --warning: #f59e0b;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      padding: 2rem 1rem;
+      color: var(--text);
+      background: var(--bg);
+      margin: 0;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    h2 {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin: 2rem 0 1rem 0;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+
+    .back-link {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Auth Section */
+    .auth-section {
+      background: #fef3c7;
+      border: 1px solid #fcd34d;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .auth-section.authenticated {
+      background: #d1fae5;
+      border-color: #6ee7b7;
+    }
+
+    .auth-section h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1rem;
+    }
+
+    .auth-section p {
+      margin: 0 0 1rem 0;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    /* Forms */
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="url"],
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    button:hover {
+      background: var(--primary-hover);
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    button:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    button.secondary {
+      background: white;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    button.secondary:hover {
+      background: #f1f5f9;
+    }
+
+    button.danger {
+      background: var(--danger);
+    }
+
+    button.danger:hover {
+      background: var(--danger-hover);
+    }
+
+    button.success {
+      background: var(--success);
+    }
+
+    /* List Editor */
+    .list-editor {
+      display: none;
+    }
+
+    .list-editor.active {
+      display: block;
+    }
+
+    .list-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    @media (max-width: 600px) {
+      .list-meta {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Sections */
+    .section-card {
+      background: var(--bg);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--border);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .section-header input {
+      flex: 1;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    /* Items */
+    .item-card {
+      background: white;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      border: 1px solid var(--border);
+    }
+
+    .item-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .item-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .item-actions {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: flex-end;
+      margin-top: 0.75rem;
+    }
+
+    .item-actions button {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.85rem;
+    }
+
+    /* Messages */
+    .message {
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      display: none;
+    }
+
+    .message.show {
+      display: block;
+    }
+
+    .message.success {
+      background: #d1fae5;
+      color: #065f46;
+      border: 1px solid #6ee7b7;
+    }
+
+    .message.error {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fca5a5;
+    }
+
+    /* Mode Selector */
+    .mode-selector {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .mode-selector button {
+      flex: 1;
+    }
+
+    .mode-selector button.active {
+      background: var(--success);
+    }
+
+    /* Existing Lists */
+    .existing-lists {
+      display: grid;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+
+    .existing-list-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem;
+      background: var(--bg);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .existing-list-item .name {
+      font-weight: 600;
+    }
+
+    .existing-list-item .actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .existing-list-item button {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.85rem;
+    }
+
+    /* Help text */
+    .help-text {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    .token-info {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+
+    .token-info a {
+      color: var(--primary);
+    }
+
+    footer {
+      margin-top: 3rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      padding-top: 1.5rem;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>⚙️ Admin-Panel</h1>
+      <a href="index.html" class="back-link">← Zurück zur Übersicht</a>
+    </header>
+
+    <div id="message" class="message"></div>
+
+    <!-- Auth Section -->
+    <div id="auth-section" class="auth-section">
+      <h3>🔐 GitHub Authentifizierung</h3>
+      <p>Um Listen zu erstellen oder zu bearbeiten, benötigst du ein GitHub Personal Access Token mit "repo" Berechtigung.</p>
+      <div class="form-group">
+        <label for="github-token">Personal Access Token</label>
+        <input type="password" id="github-token" placeholder="ghp_xxxxxxxxxxxx">
+      </div>
+      <button onclick="saveToken()">💾 Token speichern</button>
+      <button onclick="clearToken()" class="secondary">🗑️ Token löschen</button>
+
+      <div class="token-info">
+        <strong>So erstellst du ein Token:</strong><br>
+        1. Gehe zu <a href="https://github.com/settings/tokens/new" target="_blank">GitHub Token Settings</a><br>
+        2. Wähle "Generate new token (classic)"<br>
+        3. Gib einen Namen ein (z.B. "Einkaufslisten Admin")<br>
+        4. Wähle den Scope "repo" (voller Zugriff auf Repositories)<br>
+        5. Klicke auf "Generate token" und kopiere den Token
+      </div>
+    </div>
+
+    <!-- Main Content (hidden until authenticated) -->
+    <div id="main-content" style="display: none;">
+
+      <!-- Mode Selector -->
+      <div class="mode-selector">
+        <button id="btn-new-list" class="active" onclick="setMode('new')">➕ Neue Liste erstellen</button>
+        <button id="btn-edit-list" onclick="setMode('edit')">✏️ Liste bearbeiten</button>
+      </div>
+
+      <!-- Edit Mode: List Selector -->
+      <div id="edit-mode-selector" style="display: none;">
+        <h2>Vorhandene Listen</h2>
+        <div id="existing-lists" class="existing-lists">
+          Lade Listen...
+        </div>
+      </div>
+
+      <!-- List Editor -->
+      <div id="list-editor" class="list-editor active">
+        <h2 id="editor-title">Neue Liste erstellen</h2>
+
+        <div class="list-meta">
+          <div class="form-group">
+            <label for="list-title">Listentitel</label>
+            <input type="text" id="list-title" placeholder="z.B. Elektronik-Einkaufsliste">
+          </div>
+          <div class="form-group">
+            <label for="list-filename">Dateiname</label>
+            <input type="text" id="list-filename" placeholder="z.B. januar2026">
+            <div class="help-text">Ohne .html Endung, keine Leerzeichen oder Sonderzeichen</div>
+          </div>
+        </div>
+
+        <h2>Kategorien & Artikel</h2>
+
+        <div id="sections-container">
+          <!-- Sections will be added here -->
+        </div>
+
+        <button onclick="addSection()" class="secondary" style="margin-bottom: 2rem;">➕ Kategorie hinzufügen</button>
+
+        <hr style="border: none; border-top: 1px solid var(--border); margin: 2rem 0;">
+
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <button onclick="saveList()" class="success" id="save-btn">💾 Liste speichern</button>
+          <button onclick="previewList()" class="secondary">👁️ Vorschau</button>
+          <button onclick="clearEditor()" class="danger">🗑️ Editor leeren</button>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <p>Einkaufslisten Admin-Panel</p>
+    </footer>
+  </div>
+
+  <!-- Preview Modal -->
+  <div id="preview-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; padding: 2rem; overflow: auto;">
+    <div style="background: white; max-width: 900px; margin: 0 auto; border-radius: 16px; overflow: hidden;">
+      <div style="padding: 1rem; background: var(--bg); display: flex; justify-content: space-between; align-items: center;">
+        <strong>Vorschau</strong>
+        <button onclick="closePreview()" class="secondary">✕ Schließen</button>
+      </div>
+      <iframe id="preview-frame" style="width: 100%; height: 80vh; border: none;"></iframe>
+    </div>
+  </div>
+
+  <script>
+    const REPO_OWNER = 'makerLab314';
+    const REPO_NAME = 'buylists';
+
+    let currentMode = 'new';
+    let editingFile = null;
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      checkAuth();
+      addSection(); // Add initial section
+    });
+
+    // Authentication
+    function checkAuth() {
+      const token = localStorage.getItem('github_token');
+      const authSection = document.getElementById('auth-section');
+      const mainContent = document.getElementById('main-content');
+
+      if (token) {
+        authSection.classList.add('authenticated');
+        authSection.innerHTML = `
+          <h3>✅ Authentifiziert</h3>
+          <p>Du bist eingeloggt und kannst Listen erstellen und bearbeiten.</p>
+          <button onclick="clearToken()" class="secondary">🔓 Ausloggen</button>
+        `;
+        mainContent.style.display = 'block';
+      } else {
+        mainContent.style.display = 'none';
+      }
+    }
+
+    function saveToken() {
+      const token = document.getElementById('github-token').value.trim();
+      if (!token) {
+        showMessage('Bitte gib einen Token ein.', 'error');
+        return;
+      }
+
+      // Test the token
+      fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`, {
+        headers: { 'Authorization': `token ${token}` }
+      })
+        .then(res => {
+          if (res.ok) {
+            localStorage.setItem('github_token', token);
+            showMessage('Token gespeichert und verifiziert!', 'success');
+            checkAuth();
+          } else {
+            showMessage('Token ungültig oder keine Berechtigung für dieses Repository.', 'error');
+          }
+        })
+        .catch(() => {
+          showMessage('Fehler beim Verifizieren des Tokens.', 'error');
+        });
+    }
+
+    function clearToken() {
+      localStorage.removeItem('github_token');
+      location.reload();
+    }
+
+    // Mode switching
+    function setMode(mode) {
+      currentMode = mode;
+      document.getElementById('btn-new-list').classList.toggle('active', mode === 'new');
+      document.getElementById('btn-edit-list').classList.toggle('active', mode === 'edit');
+      document.getElementById('edit-mode-selector').style.display = mode === 'edit' ? 'block' : 'none';
+
+      if (mode === 'edit') {
+        loadExistingLists();
+        document.getElementById('list-editor').classList.remove('active');
+      } else {
+        clearEditor();
+        document.getElementById('list-editor').classList.add('active');
+        document.getElementById('editor-title').textContent = 'Neue Liste erstellen';
+        editingFile = null;
+      }
+    }
+
+    async function loadExistingLists() {
+      const container = document.getElementById('existing-lists');
+      const token = localStorage.getItem('github_token');
+
+      try {
+        const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/lists`, {
+          headers: { 'Authorization': `token ${token}` }
+        });
+
+        if (!response.ok) throw new Error('Konnte Listen nicht laden');
+
+        const files = await response.json();
+        const htmlFiles = files.filter(f => f.name.endsWith('.html'));
+
+        if (htmlFiles.length === 0) {
+          container.innerHTML = '<p>Keine Listen vorhanden.</p>';
+          return;
+        }
+
+        container.innerHTML = htmlFiles.map(file => `
+          <div class="existing-list-item">
+            <span class="name">${file.name}</span>
+            <div class="actions">
+              <button onclick="editList('${file.name}')" class="secondary">✏️ Bearbeiten</button>
+              <button onclick="deleteList('${file.name}')" class="danger">🗑️ Löschen</button>
+            </div>
+          </div>
+        `).join('');
+
+      } catch (error) {
+        container.innerHTML = `<p>Fehler: ${error.message}</p>`;
+      }
+    }
+
+    async function editList(filename) {
+      const token = localStorage.getItem('github_token');
+
+      try {
+        showMessage('Lade Liste...', 'success');
+
+        const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/lists/${filename}`, {
+          headers: { 'Authorization': `token ${token}` }
+        });
+
+        if (!response.ok) throw new Error('Konnte Liste nicht laden');
+
+        const data = await response.json();
+        const html = atob(data.content);
+
+        // Parse the HTML
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+
+        // Extract title
+        const title = doc.querySelector('h1')?.textContent || '';
+        document.getElementById('list-title').value = title;
+        document.getElementById('list-filename').value = filename.replace('.html', '');
+
+        // Clear sections
+        document.getElementById('sections-container').innerHTML = '';
+
+        // Extract sections
+        const sections = doc.querySelectorAll('section');
+        sections.forEach(section => {
+          const sectionName = section.querySelector('h2')?.textContent || '';
+          const sectionId = addSection();
+
+          document.querySelector(`#${sectionId} .section-name`).value = sectionName;
+
+          const items = section.querySelectorAll('li');
+          const itemsContainer = document.querySelector(`#${sectionId} .items-container`);
+          itemsContainer.innerHTML = ''; // Clear default item
+
+          items.forEach(item => {
+            const titleEl = item.querySelector('.item-title');
+            const linkEl = item.querySelector('a');
+            const qtyEl = item.querySelector('.qty');
+
+            const itemName = titleEl?.childNodes[0]?.textContent.trim() || '';
+            const itemQty = qtyEl?.textContent || '';
+            const itemLink = linkEl?.href || '';
+            const linkText = linkEl?.textContent || 'Zum Produkt';
+
+            addItemToSection(sectionId, {
+              name: itemName,
+              qty: itemQty,
+              link: itemLink,
+              linkText: linkText
+            });
+          });
+        });
+
+        editingFile = filename;
+        document.getElementById('editor-title').textContent = `Liste bearbeiten: ${filename}`;
+        document.getElementById('list-editor').classList.add('active');
+        showMessage('Liste geladen!', 'success');
+
+      } catch (error) {
+        showMessage(`Fehler: ${error.message}`, 'error');
+      }
+    }
+
+    async function deleteList(filename) {
+      if (!confirm(`Bist du sicher, dass du "${filename}" löschen möchtest?`)) return;
+
+      const token = localStorage.getItem('github_token');
+
+      try {
+        // Get file SHA
+        const getResponse = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/lists/${filename}`, {
+          headers: { 'Authorization': `token ${token}` }
+        });
+
+        if (!getResponse.ok) throw new Error('Konnte Datei nicht finden');
+
+        const fileData = await getResponse.json();
+
+        // Delete file
+        const deleteResponse = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/lists/${filename}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `token ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            message: `Delete ${filename}`,
+            sha: fileData.sha
+          })
+        });
+
+        if (!deleteResponse.ok) throw new Error('Konnte Datei nicht löschen');
+
+        showMessage('Liste gelöscht!', 'success');
+        loadExistingLists();
+
+      } catch (error) {
+        showMessage(`Fehler: ${error.message}`, 'error');
+      }
+    }
+
+    // Section management
+    let sectionCounter = 0;
+
+    function addSection() {
+      const id = `section-${sectionCounter++}`;
+      const container = document.getElementById('sections-container');
+
+      const sectionHtml = `
+        <div class="section-card" id="${id}">
+          <div class="section-header">
+            <input type="text" class="section-name" placeholder="Kategoriename (z.B. Mikrocontroller)">
+            <button onclick="removeSection('${id}')" class="danger" style="margin-left: 1rem;">🗑️</button>
+          </div>
+          <div class="items-container">
+          </div>
+          <button onclick="addItemToSection('${id}')" class="secondary" style="margin-top: 0.5rem;">➕ Artikel hinzufügen</button>
+        </div>
+      `;
+
+      container.insertAdjacentHTML('beforeend', sectionHtml);
+      addItemToSection(id); // Add initial item
+      return id;
+    }
+
+    function removeSection(id) {
+      document.getElementById(id)?.remove();
+    }
+
+    let itemCounter = 0;
+
+    function addItemToSection(sectionId, data = {}) {
+      const itemId = `item-${itemCounter++}`;
+      const container = document.querySelector(`#${sectionId} .items-container`);
+
+      const itemHtml = `
+        <div class="item-card" id="${itemId}">
+          <div class="item-row">
+            <div class="form-group" style="margin-bottom: 0;">
+              <input type="text" class="item-name" placeholder="Artikelname" value="${data.name || ''}">
+            </div>
+            <div class="form-group" style="margin-bottom: 0; width: 120px;">
+              <input type="text" class="item-qty" placeholder="Menge (opt.)" value="${data.qty || ''}">
+            </div>
+          </div>
+          <div class="item-row">
+            <div class="form-group" style="margin-bottom: 0;">
+              <input type="url" class="item-link" placeholder="Link (optional)" value="${data.link || ''}">
+            </div>
+            <div class="form-group" style="margin-bottom: 0; width: 150px;">
+              <input type="text" class="item-linktext" placeholder="Linktext" value="${data.linkText || 'Zum Produkt'}">
+            </div>
+          </div>
+          <div class="item-actions">
+            <button onclick="removeItem('${itemId}')" class="danger">🗑️ Entfernen</button>
+          </div>
+        </div>
+      `;
+
+      container.insertAdjacentHTML('beforeend', itemHtml);
+    }
+
+    function removeItem(id) {
+      document.getElementById(id)?.remove();
+    }
+
+    // Generate HTML
+    function generateListHTML() {
+      const title = document.getElementById('list-title').value || 'Einkaufsliste';
+
+      let sectionsHTML = '';
+      const sections = document.querySelectorAll('.section-card');
+
+      sections.forEach(section => {
+        const sectionName = section.querySelector('.section-name').value || 'Kategorie';
+        const items = section.querySelectorAll('.item-card');
+
+        let itemsHTML = '';
+        items.forEach(item => {
+          const name = item.querySelector('.item-name').value;
+          if (!name) return;
+
+          const qty = item.querySelector('.item-qty').value;
+          const link = item.querySelector('.item-link').value;
+          const linkText = item.querySelector('.item-linktext').value || 'Zum Produkt';
+
+          const qtySpan = qty ? `<span class="qty">${escapeHtml(qty)}</span>` : '';
+          const linkDiv = link ? `
+              <div class="link-wrapper">
+                <a href="${escapeHtml(link)}" target="_blank" rel="noopener">${escapeHtml(linkText)}</a>
+              </div>` : '';
+
+          itemsHTML += `
+          <li>
+            <div class="checkbox-wrapper">
+              <input type="checkbox" onchange="toggleItem(this)">
+            </div>
+            <div class="content">
+              <span class="item-title">${escapeHtml(name)} ${qtySpan}</span>${linkDiv}
+            </div>
+          </li>`;
+        });
+
+        if (itemsHTML) {
+          sectionsHTML += `
+      <section>
+        <h2>${escapeHtml(sectionName)}</h2>
+        <ul>${itemsHTML}
+        </ul>
+      </section>
+`;
+        }
+      });
+
+      return `<!doctype html>
+<html lang="de">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>${escapeHtml(title)}</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --success: #10b981;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      padding: 2rem 1rem;
+      color: var(--text);
+      background: var(--bg);
+      margin: 0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    button:hover {
+      background: var(--primary-hover);
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    button.secondary {
+      background: white;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    button.secondary:hover {
+      background: #f1f5f9;
+    }
+
+    section {
+      margin-bottom: 2.5rem;
+    }
+
+    h2 {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      display: flex;
+      align-items: flex-start;
+      padding: 1rem;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.2s;
+    }
+
+    li:last-child {
+      border-bottom: none;
+    }
+
+    li:hover {
+      background: #f8fafc;
+    }
+
+    .checkbox-wrapper {
+      margin-right: 1rem;
+      padding-top: 0.25rem;
+    }
+
+    input[type="checkbox"] {
+      width: 1.2rem;
+      height: 1.2rem;
+      cursor: pointer;
+      accent-color: var(--primary);
+    }
+
+    .content {
+      flex: 1;
+    }
+
+    .item-title {
+      font-weight: 600;
+      font-size: 1.05rem;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    .item-title.checked {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .qty {
+      font-weight: 400;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      background: #e2e8f0;
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      margin-left: 0.5rem;
+    }
+
+    .link-wrapper {
+      margin-top: 0.25rem;
+      font-size: 0.9rem;
+    }
+
+    a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    footer {
+      margin-top: 3rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      padding-top: 1.5rem;
+    }
+
+    @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .actions {
+        width: 100%;
+      }
+
+      button {
+        flex: 1;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>${escapeHtml(title)}</h1>
+      <div class="actions">
+        <button onclick="exportToTxt()" class="secondary">
+          📄 Als TXT speichern
+        </button>
+        <button onclick="sendMail()">
+          📧 Per Mail senden
+        </button>
+      </div>
+    </header>
+
+    <div id="list-content">${sectionsHTML}
+    </div>
+
+    <footer>
+      <p>Erstellt für dein Projekt. Viel Spaß beim Einkaufen!</p>
+    </footer>
+  </div>
+
+  <script>
+    function toggleItem(checkbox) {
+      const title = checkbox.closest('li').querySelector('.item-title');
+      if (checkbox.checked) {
+        title.classList.add('checked');
+      } else {
+        title.classList.remove('checked');
+      }
+    }
+
+    function cleanUrl(url) {
+      try {
+        return url.split('?')[0];
+      } catch (e) {
+        return url;
+      }
+    }
+
+    function getListText() {
+      let text = document.querySelector('h1').innerText + "\\n" + "=".repeat(30) + "\\n\\n";
+      const sections = document.querySelectorAll('section');
+
+      sections.forEach(section => {
+        const h2 = section.querySelector('h2').innerText;
+        text += h2 + "\\n" + "-".repeat(h2.length) + "\\n";
+
+        const items = section.querySelectorAll('li');
+        items.forEach(item => {
+          const title = item.querySelector('.item-title').innerText;
+          const checked = item.querySelector('input').checked ? "[x]" : "[ ]";
+          const links = Array.from(item.querySelectorAll('a')).map(a => cleanUrl(a.href)).join(', ');
+
+          text += checked + " " + title + "\\n";
+          if (links) text += "    Link: " + links + "\\n";
+        });
+        text += "\\n";
+      });
+      return text;
+    }
+
+    function exportToTxt() {
+      const text = getListText();
+      const blob = new Blob([text], { type: 'text/plain' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'einkaufsliste.txt';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    function sendMail() {
+      const text = getListText();
+      const subject = encodeURIComponent(document.querySelector('h1').innerText);
+      const body = encodeURIComponent(text);
+      const mailtoLink = "mailto:?subject=" + subject + "&body=" + body;
+
+      if (mailtoLink.length > 2000) {
+        alert("Die Liste ist zu lang für eine direkte E-Mail. Bitte nutze 'Als TXT speichern'.");
+        return;
+      }
+
+      window.location.href = mailtoLink;
+    }
+  </script>
+</body>
+
+</html>`;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Preview
+    function previewList() {
+      const html = generateListHTML();
+      const modal = document.getElementById('preview-modal');
+      const frame = document.getElementById('preview-frame');
+
+      frame.srcdoc = html;
+      modal.style.display = 'block';
+    }
+
+    function closePreview() {
+      document.getElementById('preview-modal').style.display = 'none';
+    }
+
+    // Save list
+    async function saveList() {
+      const token = localStorage.getItem('github_token');
+      if (!token) {
+        showMessage('Bitte zuerst einloggen.', 'error');
+        return;
+      }
+
+      const filename = document.getElementById('list-filename').value.trim();
+      if (!filename) {
+        showMessage('Bitte einen Dateinamen eingeben.', 'error');
+        return;
+      }
+
+      if (!/^[a-zA-Z0-9_-]+$/.test(filename)) {
+        showMessage('Dateiname darf nur Buchstaben, Zahlen, - und _ enthalten.', 'error');
+        return;
+      }
+
+      const fullFilename = `${filename}.html`;
+      const html = generateListHTML();
+      const content = btoa(unescape(encodeURIComponent(html)));
+
+      const btn = document.getElementById('save-btn');
+      btn.disabled = true;
+      btn.textContent = '⏳ Speichern...';
+
+      try {
+        // Check if file exists (for updating)
+        let sha = null;
+        try {
+          const checkResponse = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/lists/${fullFilename}`, {
+            headers: { 'Authorization': `token ${token}` }
+          });
+          if (checkResponse.ok) {
+            const existingFile = await checkResponse.json();
+            sha = existingFile.sha;
+          }
+        } catch (e) {
+          // File doesn't exist, that's fine
+        }
+
+        const body = {
+          message: sha ? `Update ${fullFilename}` : `Add ${fullFilename}`,
+          content: content
+        };
+        if (sha) body.sha = sha;
+
+        const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/lists/${fullFilename}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `token ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(body)
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.message || 'Fehler beim Speichern');
+        }
+
+        showMessage(`Liste erfolgreich gespeichert! Link: https://${REPO_OWNER}.github.io/${REPO_NAME}/lists/${fullFilename}`, 'success');
+
+      } catch (error) {
+        showMessage(`Fehler: ${error.message}`, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '💾 Liste speichern';
+      }
+    }
+
+    // Clear editor
+    function clearEditor() {
+      document.getElementById('list-title').value = '';
+      document.getElementById('list-filename').value = '';
+      document.getElementById('sections-container').innerHTML = '';
+      sectionCounter = 0;
+      itemCounter = 0;
+      addSection();
+      editingFile = null;
+    }
+
+    // Messages
+    function showMessage(text, type) {
+      const msg = document.getElementById('message');
+      msg.textContent = text;
+      msg.className = `message show ${type}`;
+      setTimeout(() => {
+        msg.classList.remove('show');
+      }, 5000);
+    }
+  </script>
+</body>
+
+</html>
