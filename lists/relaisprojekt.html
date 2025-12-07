@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Relais</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --success: #10b981;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      padding: 2rem 1rem;
+      color: var(--text);
+      background: var(--bg);
+      margin: 0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    button:hover {
+      background: var(--primary-hover);
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    button.secondary {
+      background: white;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    button.secondary:hover {
+      background: #f1f5f9;
+    }
+
+    section {
+      margin-bottom: 2.5rem;
+    }
+
+    h2 {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      display: flex;
+      align-items: flex-start;
+      padding: 1rem;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.2s;
+    }
+
+    li:last-child {
+      border-bottom: none;
+    }
+
+    li:hover {
+      background: #f8fafc;
+    }
+
+    .checkbox-wrapper {
+      margin-right: 1rem;
+      padding-top: 0.25rem;
+    }
+
+    input[type="checkbox"] {
+      width: 1.2rem;
+      height: 1.2rem;
+      cursor: pointer;
+      accent-color: var(--primary);
+    }
+
+    .content {
+      flex: 1;
+    }
+
+    .item-title {
+      font-weight: 600;
+      font-size: 1.05rem;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    .item-title.checked {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .qty {
+      font-weight: 400;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      background: #e2e8f0;
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      margin-left: 0.5rem;
+    }
+
+    .link-wrapper {
+      margin-top: 0.25rem;
+      font-size: 0.9rem;
+    }
+
+    a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    footer {
+      margin-top: 3rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      padding-top: 1.5rem;
+    }
+
+    @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .actions {
+        width: 100%;
+      }
+
+      button {
+        flex: 1;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>Relais</h1>
+      <div class="actions">
+        <button onclick="exportToTxt()" class="secondary">
+          📄 Als TXT speichern
+        </button>
+        <button onclick="sendMail()">
+          📧 Per Mail senden
+        </button>
+      </div>
+    </header>
+
+    <div id="list-content">
+      <section>
+        <h2>ICs</h2>
+        <ul>
+          <li>
+            <div class="checkbox-wrapper">
+              <input type="checkbox" onchange="toggleItem(this)">
+            </div>
+            <div class="content">
+              <span class="item-title">74HC165, 74HC595, 74HC04, 74HC74  <span class="qty">2 Boxen</span></span>
+              <div class="link-wrapper">
+                <a href="https://www.amazon.de/BOJACK-SN74LS-Low-Power-Logik-IC-Chip-Sortiment-Kit-IC-Chip-Arbeit/dp/B0B28JY8T9/ref=sr_1_1_sspa?__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&amp;crid=2SABC60NVQD0Z&amp;dib=eyJ2IjoiMSJ9.R_1p71sJQfAAx57QX_1wi8bJ1vqvGcV3xxDFC38_frusJnrDKJzT0l1gdAbF5OFVc0EJ6pV7iF-4cXVsvXxW2MEm9wmzZ6nERtwn8T2GuPLTDkvrAXPWsQhX89FS7Cv3Fzaek_sxfPHrGSDDbVOqog2WyTcNdHAGH1NnsQW_ng-DSWdohF_PJzbu8CBEQJANpOIx1Xx705os5DZnUMpTa-ipvIYFfM1uIMRsv8vSJcQEJaEuDxspMr8pFTgLAg37i7UHyg1jYA0a26au_T44Glz_u185ynUDNQzPoOQUB9w.sX8weICcPHLCD6kjxpyAogL_2Kw91BRIApAobyHUk3s&amp;dib_tag=se&amp;keywords=74HC74&amp;qid=1765067815&amp;sprefix=74hc74%2Caps%2C121&amp;sr=8-1-spons&amp;aref=bGeRJTq8Hw&amp;sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&amp;psc=1" target="_blank" rel="noopener">Amazon</a>
+              </div>
+            </div>
+          </li>
+          <li>
+            <div class="checkbox-wrapper">
+              <input type="checkbox" onchange="toggleItem(this)">
+            </div>
+            <div class="content">
+              <span class="item-title">74HC74  <span class="qty">1</span></span>
+              <div class="link-wrapper">
+                <a href="https://www.amazon.de/Reland-Sun-SN74HC109N-SN74HC125N-SN74HC123N/dp/B09BDB5TLX/ref=sr_1_5?__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&amp;crid=2VCW9R9Q8MTDI&amp;dib=eyJ2IjoiMSJ9.R_1p71sJQfAAx57QX_1wi8bJ1vqvGcV3xxDFC38_frusJnrDKJzT0l1gdAbF5OFVc0EJ6pV7iF-4cXVsvXxW2MEm9wmzZ6nERtwn8T2GuPLTDkvrAXPWsQhX89FS7Cv3Fzaek_sxfPHrGSDDbVOqog2WyTcNdHAGH1NnsQW_ng-DSWdohF_PJzbu8CBEQJANpOIx1Xx705os5DZnUMpTa-ipvIYFfM1uIMRsv8vSJcQEJaEuDxspMr8pFTgLAg37i7UHyg1jYA0a26au_T44Glz_u185ynUDNQzPoOQUB9w.sX8weICcPHLCD6kjxpyAogL_2Kw91BRIApAobyHUk3s&amp;dib_tag=se&amp;keywords=74HC74&amp;qid=1765067917&amp;sprefix=74hc74%2Caps%2C216&amp;sr=8-5" target="_blank" rel="noopener">Amazon</a>
+              </div>
+            </div>
+          </li>
+          <li>
+            <div class="checkbox-wrapper">
+              <input type="checkbox" onchange="toggleItem(this)">
+            </div>
+            <div class="content">
+              <span class="item-title">CD 4060 <span class="qty">1</span></span>
+              <div class="link-wrapper">
+                <a href="https://www.amazon.de/Reland-Sun-CD4060BE-CD4060-DIP-16/dp/B09C25WSPC/ref=sr_1_1?__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&amp;crid=2KY0H0RRNCRX&amp;dib=eyJ2IjoiMSJ9.zElwMhulqjSxkdUlzVF0-vqCC8Y66yder3aOjNPmRX6ojnTzgbQyT-QWUZNN2vgLAQvvDFnPq1_bIqjtOm1_mZLS2hgwTQ2DY55CFUqHFuQiKVLngYoytrnKJ5Tc0usjYPN0pkMFOZGgIGi1vywUw6mHiV22lliYYQwLXWH5-afKxnX2Q2G8YZS2SFAboHD1uwbeDJdIY3teJ308nnGSl5nuib2a5D5zp4cHr1vEq-Q.4Ll2pQfB7l0UtTf8gkBVPXA_R6VBI-6MjZ4wzTbxHIg&amp;dib_tag=se&amp;keywords=CD4060&amp;qid=1765067962&amp;sprefix=cd4060%2Caps%2C77&amp;sr=8-1" target="_blank" rel="noopener">Amazon</a>
+              </div>
+            </div>
+          </li>
+          <li>
+            <div class="checkbox-wrapper">
+              <input type="checkbox" onchange="toggleItem(this)">
+            </div>
+            <div class="content">
+              <span class="item-title">ULN 2003 <span class="qty">1</span></span>
+              <div class="link-wrapper">
+                <a href="https://www.amazon.de/ALLECIN-ULN2003-ULN2003AN-Transistor-Arrays-Hochspannungs-Hochstrom-Darlington-Transistoren/dp/B0CBM23ZJ3/ref=sr_1_5?__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&amp;crid=FS98TJ22QAPX&amp;dib=eyJ2IjoiMSJ9.3uzhQ-3yiUHG35bBNrz8Zswmm0S4cf1ITjdhPIQBcbvN10q8VujENfnf3LESFXINPue3teQc_fUAYW4rUgcbZawnGcfaE6nMZQ2Q7sl7jg8TAEGux6j4vRYFWQPrmq9ahKPRg6lVluzQ6fvN4z-NSbv6UUNwW9LdctGNgQslCXtWiD0_pWaU3-OX28mDymEKe0Gr9-8D8CASyMFyI0Sv-2zIouIHEsm5cLPDI-LjL169Xr_Ri6UMCF9r5CAtzTTv3cChzZhOH-wsErW9ZJJhCN9z8jZAH9ZNvu1Dk3uAZoE.h8rAhzVVh3JJY-c8fHi-uk7KRfawR-5f_tRs_E2k_zA&amp;dib_tag=se&amp;keywords=ULN2003A&amp;qid=1765068018&amp;sprefix=uln2003a%2Caps%2C79&amp;sr=8-5&amp;th=1" target="_blank" rel="noopener">Amazon</a>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Relais</h2>
+        <ul>
+          <li>
+            <div class="checkbox-wrapper">
+              <input type="checkbox" onchange="toggleItem(this)">
+            </div>
+            <div class="content">
+              <span class="item-title">Finder 40.52.7.005 <span class="qty">8x</span></span>
+              <div class="link-wrapper">
+                <a href="https://www.reichelt.de/de/de/shop/produkt/steck-printrelais_2_co_8_a_5_v_dc_sensitiv-259188?PROVID=2788&amp;gad_source=1&amp;gad_campaignid=21154720511&amp;gbraid=0AAAAADwnxtZG3RUgRVG4iIml32CCRL1tq&amp;gclid=CjwKCAiAxc_JBhA2EiwAFVs7XG6bDBtPJmeEl5iuVnmrQgW8iIXHZCqiu8rt_GzyM34ohhgxVQlx9hoCs_wQAvD_BwE" target="_blank" rel="noopener">Reichelt</a>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+    </div>
+
+    <footer>
+      <p>Erstellt für dein Projekt. Viel Spaß beim Einkaufen!</p>
+    </footer>
+  </div>
+
+  <script>
+    function toggleItem(checkbox) {
+      const title = checkbox.closest('li').querySelector('.item-title');
+      if (checkbox.checked) {
+        title.classList.add('checked');
+      } else {
+        title.classList.remove('checked');
+      }
+    }
+
+    function cleanUrl(url) {
+      try {
+        return url.split('?')[0];
+      } catch (e) {
+        return url;
+      }
+    }
+
+    function getListText() {
+      let text = document.querySelector('h1').innerText + "\n" + "=".repeat(30) + "\n\n";
+      const sections = document.querySelectorAll('section');
+
+      sections.forEach(section => {
+        const h2 = section.querySelector('h2').innerText;
+        text += h2 + "\n" + "-".repeat(h2.length) + "\n";
+
+        const items = section.querySelectorAll('li');
+        items.forEach(item => {
+          const title = item.querySelector('.item-title').innerText;
+          const checked = item.querySelector('input').checked ? "[x]" : "[ ]";
+          const links = Array.from(item.querySelectorAll('a')).map(a => cleanUrl(a.href)).join(', ');
+
+          text += checked + " " + title + "\n";
+          if (links) text += "    Link: " + links + "\n";
+        });
+        text += "\n";
+      });
+      return text;
+    }
+
+    function exportToTxt() {
+      const text = getListText();
+      const blob = new Blob([text], { type: 'text/plain' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'einkaufsliste.txt';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    function sendMail() {
+      const text = getListText();
+      const subject = encodeURIComponent(document.querySelector('h1').innerText);
+      const body = encodeURIComponent(text);
+      const mailtoLink = "mailto:?subject=" + subject + "&body=" + body;
+
+      if (mailtoLink.length > 2000) {
+        alert("Die Liste ist zu lang für eine direkte E-Mail. Bitte nutze 'Als TXT speichern'.");
+        return;
+      }
+
+      window.location.href = mailtoLink;
+    }
+  </script>
+</body>
+
+</html>
