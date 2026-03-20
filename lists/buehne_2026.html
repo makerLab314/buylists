@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Bühnenentechnik</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --success: #10b981;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      padding: 2rem 1rem;
+      color: var(--text);
+      background: var(--bg);
+      margin: 0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    button:hover {
+      background: var(--primary-hover);
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    button.secondary {
+      background: white;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    button.secondary:hover {
+      background: #f1f5f9;
+    }
+
+    section {
+      margin-bottom: 2.5rem;
+    }
+
+    h2 {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      display: flex;
+      align-items: flex-start;
+      padding: 1rem;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.2s;
+    }
+
+    li:last-child {
+      border-bottom: none;
+    }
+
+    li:hover {
+      background: #f8fafc;
+    }
+
+    .checkbox-wrapper {
+      margin-right: 1rem;
+      padding-top: 0.25rem;
+    }
+
+    input[type="checkbox"] {
+      width: 1.2rem;
+      height: 1.2rem;
+      cursor: pointer;
+      accent-color: var(--primary);
+    }
+
+    .content {
+      flex: 1;
+    }
+
+    .item-title {
+      font-weight: 600;
+      font-size: 1.05rem;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    .item-title.checked {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .qty {
+      font-weight: 400;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      background: #e2e8f0;
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      margin-left: 0.5rem;
+    }
+
+    .link-wrapper {
+      margin-top: 0.25rem;
+      font-size: 0.9rem;
+    }
+
+    a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    footer {
+      margin-top: 3rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      padding-top: 1.5rem;
+    }
+
+    @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .actions {
+        width: 100%;
+      }
+
+      button {
+        flex: 1;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>Bühnenentechnik</h1>
+      <div class="actions">
+        <button onclick="exportToTxt()" class="secondary">
+          📄 Als TXT speichern
+        </button>
+        <button onclick="sendMail()">
+          📧 Per Mail senden
+        </button>
+      </div>
+    </header>
+
+    <div id="list-content">
+      <section>
+        <h2>Kabel</h2>
+        <ul>
+          <li>
+            <div class="checkbox-wrapper">
+              <input type="checkbox" onchange="toggleItem(this)">
+            </div>
+            <div class="content">
+              <span class="item-title">RJ45 to XLR 3 oder 5 Pol Male und Female <span class="qty">jewels 1</span></span>
+            </div>
+          </li>
+          <li>
+            <div class="checkbox-wrapper">
+              <input type="checkbox" onchange="toggleItem(this)">
+            </div>
+            <div class="content">
+              <span class="item-title">5 Meter XLR 3 Pol  <span class="qty">6</span></span>
+            </div>
+          </li>
+          <li>
+            <div class="checkbox-wrapper">
+              <input type="checkbox" onchange="toggleItem(this)">
+            </div>
+            <div class="content">
+              <span class="item-title">2 Meter XLR 3 Pol  <span class="qty">5</span></span>
+            </div>
+          </li>
+          <li>
+            <div class="checkbox-wrapper">
+              <input type="checkbox" onchange="toggleItem(this)">
+            </div>
+            <div class="content">
+              <span class="item-title">1 Meter XLR 3 Pol  <span class="qty">3</span></span>
+            </div>
+          </li>
+          <li>
+            <div class="checkbox-wrapper">
+              <input type="checkbox" onchange="toggleItem(this)">
+            </div>
+            <div class="content">
+              <span class="item-title">10 Meter XLR 3 Pol  <span class="qty">5</span></span>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+    </div>
+
+    <footer>
+      <p>Erstellt für dein Projekt. Viel Spaß beim Einkaufen!</p>
+    </footer>
+  </div>
+
+  <script>
+    function toggleItem(checkbox) {
+      const title = checkbox.closest('li').querySelector('.item-title');
+      if (checkbox.checked) {
+        title.classList.add('checked');
+      } else {
+        title.classList.remove('checked');
+      }
+    }
+
+    function cleanUrl(url) {
+      try {
+        return url.split('?')[0];
+      } catch (e) {
+        return url;
+      }
+    }
+
+    function getListText() {
+      let text = document.querySelector('h1').innerText + "\n" + "=".repeat(30) + "\n\n";
+      const sections = document.querySelectorAll('section');
+
+      sections.forEach(section => {
+        const h2 = section.querySelector('h2').innerText;
+        text += h2 + "\n" + "-".repeat(h2.length) + "\n";
+
+        const items = section.querySelectorAll('li');
+        items.forEach(item => {
+          const title = item.querySelector('.item-title').innerText;
+          const checked = item.querySelector('input').checked ? "[x]" : "[ ]";
+          const links = Array.from(item.querySelectorAll('a')).map(a => cleanUrl(a.href)).join(', ');
+
+          text += checked + " " + title + "\n";
+          if (links) text += "    Link: " + links + "\n";
+        });
+        text += "\n";
+      });
+      return text;
+    }
+
+    function exportToTxt() {
+      const text = getListText();
+      const blob = new Blob([text], { type: 'text/plain' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'einkaufsliste.txt';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    function sendMail() {
+      const text = getListText();
+      const subject = encodeURIComponent(document.querySelector('h1').innerText);
+      const body = encodeURIComponent(text);
+      const mailtoLink = "mailto:?subject=" + subject + "&body=" + body;
+
+      if (mailtoLink.length > 2000) {
+        alert("Die Liste ist zu lang für eine direkte E-Mail. Bitte nutze 'Als TXT speichern'.");
+        return;
+      }
+
+      window.location.href = mailtoLink;
+    }
+  </script>
+</body>
+
+</html>
