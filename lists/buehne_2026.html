@@ -210,6 +210,7 @@
     <header>
       <h1>Bühnenentechnik</h1>
       <div class="actions">
+        <span id="sync-status" style="font-size:0.85rem; color: var(--text-muted); align-self: center; white-space: nowrap;">🔄 Lade...</span>
         <button onclick="exportToTxt()" class="secondary">
           📄 Als TXT speichern
         </button>
@@ -218,6 +219,15 @@
         </button>
       </div>
     </header>
+
+    <details style="margin-bottom: 1.5rem; font-size: 0.85rem; color: var(--text-muted);">
+      <summary style="cursor: pointer; user-select: none;">🔑 Sync-Einstellungen</summary>
+      <div style="margin-top: 0.75rem; display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+        <input type="password" id="sync-token-input" placeholder="GitHub Token für Sync" style="flex: 1; min-width: 200px; padding: 0.4rem 0.6rem; border: 1px solid var(--border); border-radius: 6px; font-size: 0.85rem;">
+        <button onclick="saveSyncToken()" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">Aktivieren</button>
+      </div>
+      <p style="margin: 0.5rem 0 0; font-size: 0.8rem;">Ohne Token werden Häkchen nur lokal gespeichert und nicht synchronisiert.</p>
+    </details>
 
     <div id="list-content">
       <section>
@@ -338,6 +348,113 @@
   </div>
 
   <script>
+    const SYNC_REPO_OWNER = 'makerLab314';
+    const SYNC_REPO_NAME = 'buylists';
+    const SYNC_LIST_NAME = window.location.pathname.split('/').pop().replace('.html', '') || 'list';
+
+    function simpleHash(str) {
+      let h = 0;
+      for (let i = 0; i < str.length; i++) {
+        h = Math.imul(31, h) + str.charCodeAt(i) | 0;
+      }
+      return Math.abs(h).toString(36);
+    }
+
+    function getItemKey(li) {
+      const section = li.closest('section');
+      const sectionTitle = section ? section.querySelector('h2').textContent.trim() : '';
+      const itemTitle = li.querySelector('.item-title') ? li.querySelector('.item-title').textContent.trim() : '';
+      return simpleHash(sectionTitle + '|' + itemTitle);
+    }
+
+    function getCheckedKeys() {
+      return Array.from(document.querySelectorAll('li')).reduce((acc, li) => {
+        const cb = li.querySelector('input[type="checkbox"]');
+        if (cb && cb.checked) acc.push(getItemKey(li));
+        return acc;
+      }, []);
+    }
+
+    function applyCheckedKeys(checkedKeys) {
+      const keySet = new Set(checkedKeys);
+      document.querySelectorAll('li').forEach(li => {
+        const cb = li.querySelector('input[type="checkbox"]');
+        const title = li.querySelector('.item-title');
+        if (cb && title) {
+          const checked = keySet.has(getItemKey(li));
+          cb.checked = checked;
+          title.classList.toggle('checked', checked);
+        }
+      });
+    }
+
+    function setSyncStatus(status) {
+      const el = document.getElementById('sync-status');
+      if (!el) return;
+      const map = {
+        loading: '🔄 Lade...',
+        synced: '✅ Synchronisiert',
+        saving: '💾 Speichere...',
+        'no-token': '🔒 Lokaler Modus',
+        error: '⚠️ Sync-Fehler'
+      };
+      el.textContent = map[status] || status;
+    }
+
+    async function loadCheckedStates() {
+      try {
+        const url = `https://raw.githubusercontent.com/${SYNC_REPO_OWNER}/${SYNC_REPO_NAME}/main/lists/${SYNC_LIST_NAME}_checks.json?_=${Date.now()}`;
+        const res = await fetch(url);
+        if (res.ok) {
+          const data = await res.json();
+          applyCheckedKeys(data.checked || []);
+        }
+        setSyncStatus('synced');
+      } catch (e) {
+        setSyncStatus('error');
+      }
+    }
+
+    let _saveTimer = null;
+    async function saveCheckedStates() {
+      clearTimeout(_saveTimer);
+      _saveTimer = setTimeout(async () => {
+        const token = localStorage.getItem('github_token');
+        if (!token) { setSyncStatus('no-token'); return; }
+        setSyncStatus('saving');
+        const filepath = `lists/${SYNC_LIST_NAME}_checks.json`;
+        const json = JSON.stringify({ checked: getCheckedKeys(), updated: new Date().toISOString() });
+        const content = btoa(unescape(encodeURIComponent(json)));
+        try {
+          let sha;
+          const chk = await fetch(`https://api.github.com/repos/${SYNC_REPO_OWNER}/${SYNC_REPO_NAME}/contents/${filepath}`, {
+            headers: { Authorization: `token ${token}` }
+          });
+          if (chk.ok) sha = (await chk.json()).sha;
+          const body = { message: `Sync ${SYNC_LIST_NAME}`, content };
+          if (sha) body.sha = sha;
+          const put = await fetch(`https://api.github.com/repos/${SYNC_REPO_OWNER}/${SYNC_REPO_NAME}/contents/${filepath}`, {
+            method: 'PUT',
+            headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+          });
+          setSyncStatus(put.ok ? 'synced' : 'error');
+        } catch (e) {
+          setSyncStatus('error');
+        }
+      }, 800);
+    }
+
+    function saveSyncToken() {
+      const input = document.getElementById('sync-token-input');
+      const token = input ? input.value.trim() : '';
+      if (token) {
+        localStorage.setItem('github_token', token);
+        if (input) input.value = '';
+        saveCheckedStates();
+      }
+    }
+
     function toggleItem(checkbox) {
       const title = checkbox.closest('li').querySelector('.item-title');
       if (checkbox.checked) {
@@ -345,6 +462,7 @@
       } else {
         title.classList.remove('checked');
       }
+      saveCheckedStates();
     }
 
     function cleanUrl(url) {
@@ -401,6 +519,12 @@
 
       window.location.href = mailtoLink;
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      setSyncStatus('loading');
+      loadCheckedStates();
+      setInterval(loadCheckedStates, 30000);
+    });
   </script>
 </body>
 
